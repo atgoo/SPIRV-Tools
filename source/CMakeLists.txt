@@ -24,15 +24,22 @@ macro(spvtools_core_tables VERSION)
   set(GRAMMAR_JSON_FILE "${SPIRV_HEADER_INCLUDE_DIR}/spirv/${VERSION}/spirv.core.grammar.json")
   set(GRAMMAR_INSTS_INC_FILE "${spirv-tools_BINARY_DIR}/core.insts-${VERSION}.inc")
   set(GRAMMAR_KINDS_INC_FILE "${spirv-tools_BINARY_DIR}/operand.kinds-${VERSION}.inc")
+  set(GRAMMAR_EXTENSION_ENUM_INC_FILE "${spirv-tools_BINARY_DIR}/extension_enum.inc")
+  set(GRAMMAR_ENUM_STRING_MAPPING_INC_FILE "${spirv-tools_BINARY_DIR}/enum_string_mapping.inc")
   add_custom_command(OUTPUT ${GRAMMAR_INSTS_INC_FILE} ${GRAMMAR_KINDS_INC_FILE}
+    ${GRAMMAR_EXTENSION_ENUM_INC_FILE} ${GRAMMAR_ENUM_STRING_MAPPING_INC_FILE}
     COMMAND ${PYTHON_EXECUTABLE} ${GRAMMAR_PROCESSING_SCRIPT}
       --spirv-core-grammar=${GRAMMAR_JSON_FILE}
       --core-insts-output=${GRAMMAR_INSTS_INC_FILE}
       --operand-kinds-output=${GRAMMAR_KINDS_INC_FILE}
+      --extension-enum-output=${GRAMMAR_EXTENSION_ENUM_INC_FILE}
+      --enum-string-mapping-output=${GRAMMAR_ENUM_STRING_MAPPING_INC_FILE}
     DEPENDS ${GRAMMAR_PROCESSING_SCRIPT} ${GRAMMAR_JSON_FILE}
     COMMENT "Generate info tables for SPIR-V v${VERSION} core instructions and operands.")
   list(APPEND OPCODE_CPP_DEPENDS ${GRAMMAR_INSTS_INC_FILE})
   list(APPEND OPERAND_CPP_DEPENDS ${GRAMMAR_KINDS_INC_FILE})
+  list(APPEND EXTENSION_H_DEPENDS ${GRAMMAR_EXTENSION_ENUM_INC_FILE})
+  list(APPEND ENUM_STRING_MAPPING_CPP_DEPENDS ${GRAMMAR_ENUM_STRING_MAPPING_INC_FILE})
 endmacro(spvtools_core_tables)
 
 macro(spvtools_vimsyntax VERSION CLVERSION)
@@ -79,8 +86,11 @@ macro(spvtools_opencl_tables VERSION)
   list(APPEND EXTINST_CPP_DEPENDS ${GRAMMAR_INC_FILE})
 endmacro(spvtools_opencl_tables)
 
+# Generate grammar tables. Highest version should be run the last, because
+# it overwrites some common files.
 spvtools_core_tables("1.0")
 spvtools_core_tables("1.1")
+
 spvtools_opencl_tables("1.0")
 spvtools_glsl_tables("1.0")
 
@@ -122,6 +132,16 @@ set_source_files_properties(
 set_source_files_properties(
   ${CMAKE_CURRENT_SOURCE_DIR}/ext_inst.cpp
   PROPERTIES OBJECT_DEPENDS "${EXTINST_CPP_DEPENDS}")
+set_source_files_properties(
+  ${CMAKE_CURRENT_SOURCE_DIR}/enum_string_mapping.cpp
+  PROPERTIES OBJECT_DEPENDS "${ENUM_STRING_MAPPING_CPP_DEPENDS}")
+
+set_source_files_properties(
+  ${CMAKE_CURRENT_SOURCE_DIR}/extension.h
+  PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties(
+  ${CMAKE_CURRENT_SOURCE_DIR}/extension.h
+  PROPERTIES OBJECT_DEPENDS "${EXTENSION_H_DEPENDS}")
 
 set(SPIRV_TOOLS_BUILD_VERSION_INC
   ${spirv-tools_BINARY_DIR}/build-version.inc)
@@ -154,6 +174,7 @@ set(SPIRV_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/binary.h
   ${CMAKE_CURRENT_SOURCE_DIR}/diagnostic.h
   ${CMAKE_CURRENT_SOURCE_DIR}/enum_set.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/enum_string_mapping.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ext_inst.h
   ${CMAKE_CURRENT_SOURCE_DIR}/extensions.h
   ${CMAKE_CURRENT_SOURCE_DIR}/instruction.h
@@ -179,6 +200,7 @@ set(SPIRV_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/binary.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/diagnostic.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/disassemble.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/enum_string_mapping.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ext_inst.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/extensions.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/libspirv.cpp
