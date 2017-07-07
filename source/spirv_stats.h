@@ -24,6 +24,18 @@
 
 namespace libspirv {
 
+enum SpirvStatsCommonType {
+  kSpirvStatsCommonTypeOther = 0,
+  kSpirvStatsCommonTypeF32,
+  kSpirvStatsCommonTypeVec2F32,
+  kSpirvStatsCommonTypeVec3F32,
+  kSpirvStatsCommonTypeVec4F32,
+  kSpirvStatsCommonTypeS32,
+  kSpirvStatsCommonTypeU32,
+  kSpirvStatsCommonTypeBool,
+  kSpirvStatsNumCommonTypes,
+};
+
 struct SpirvStats {
   // Version histogram, version_word -> count.
   std::unordered_map<uint32_t, uint32_t> version_hist;
@@ -77,7 +89,13 @@ struct SpirvStats {
   // This is a generalization of enum_hist, also includes literal integers and
   // masks.
   std::map<std::pair<uint32_t, uint32_t>,
-      std::map<uint32_t, uint32_t>> non_id_words_hist;
+      std::map<uint32_t, uint32_t>> operand_slot_non_id_words_hist;
+
+  std::unordered_map<uint32_t, uint32_t> id_descriptor_hist;
+  std::unordered_map<uint32_t, std::string> id_descriptor_labels;
+
+  std::map<std::pair<uint32_t, uint32_t>,
+      std::map<uint32_t, uint32_t>> operand_slot_id_descriptor_hist;
 
   // Histogram of literal strings, sharded by opcodes, opcode -> string -> count.
   // This is suboptimal if an opcode has multiple literal string operands,
