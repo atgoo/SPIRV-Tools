@@ -166,6 +166,7 @@ spv_result_t LogicalsPass(ValidationState_t& _,
       break;
     }
 
+      /*
     case SpvOpSelect: {
       uint32_t dimension = 1;
       {
@@ -224,6 +225,7 @@ spv_result_t LogicalsPass(ValidationState_t& _,
 
       break;
     }
+    */
 
     case SpvOpIEqual:
     case SpvOpINotEqual:

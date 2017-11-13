@@ -33,6 +33,9 @@ uint32_t HashU32Array(const std::vector<uint32_t>& words) {
   for (uint32_t i = 0; i < words.size(); ++i) {
     val += (words[i] + i + 123) * kKnuthMulHash;
   }
+
+  val = 1 + val % ((1 << IdDescriptorCollection::GetBitWidth()) - 1);
+
   return val;
 }
 

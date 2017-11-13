@@ -206,6 +206,8 @@ int main(int argc, char** argv) {
     if (!ReadFile<uint32_t>(input_filename, "rb", &spirv)) return 1;
     assert(!spirv.empty());
 
+    for (int i = 0; i < 100; ++i) {
+        markv.clear();
     if (SPV_SUCCESS !=
         spvtools::SpirvToMarkv(ctx.context, spirv, options, *model,
                                DiagnosticsMessageHandler,
@@ -214,6 +216,7 @@ int main(int argc, char** argv) {
       std::cerr << "error: Failed to encode " << input_filename << " to MARK-V "
                 << std::endl;
       return 1;
+    }
     }
 
     if (!WriteFile<uint8_t>(output_filename, "wb", markv.data(), markv.size()))

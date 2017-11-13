@@ -43,6 +43,10 @@ class IdDescriptorCollection {
     return it->second;
   }
 
+  static uint32_t GetBitWidth() {
+    return 8;
+  }
+
  private:
   std::unordered_map<uint32_t, uint32_t> id_to_descriptor_;
 

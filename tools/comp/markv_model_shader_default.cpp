@@ -63,12 +63,9 @@ MarkvModelShaderDefault::MarkvModelShaderDefault() {
 
   opcode_and_num_operands_huffman_codec_.reset(
       new HuffmanCodec<uint64_t>(GetOpcodeAndNumOperandsHist()));
-  opcode_and_num_operands_markov_huffman_codecs_ =
-      GetOpcodeAndNumOperandsMarkovHuffmanCodecs();
-  non_id_word_huffman_codecs_ = GetNonIdWordHuffmanCodecs();
-  id_descriptor_huffman_codecs_ = GetIdDescriptorHuffmanCodecs();
-  descriptors_with_coding_scheme_ = GetDescriptorsWithCodingScheme();
-  literal_string_huffman_codecs_ = GetLiteralStringHuffmanCodecs();
+  (void)GetOpcodeAndNumOperandsMarkovHuffmanCodecs;
+  (void)GetNonIdWordHuffmanCodecs;
+  (void)GetLiteralStringHuffmanCodecs;
 
   operand_chunk_lengths_[SPV_OPERAND_TYPE_TYPE_ID] = 4;
   operand_chunk_lengths_[SPV_OPERAND_TYPE_RESULT_ID] = 8;
